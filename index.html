@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be Mine ❤️</title>
+
+<style>
+body{
+    margin:0;
+    background:radial-gradient(circle at top,#160026,#000);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+    font-family:Segoe UI, sans-serif;
+    position:relative;
+}
+
+canvas{
+    width:900px;
+    height:450px;
+    background:linear-gradient(to top,#060010,#140022);
+    box-shadow:0 0 40px #ff5fa2;
+    border-radius:14px;
+}
+
+#buttons{
+    position:absolute;
+    bottom:40px;
+    display:none;
+    gap:20px;
+}
+
+button{
+    padding:12px 28px;
+    font-size:20px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+#yes{ background:#ff5fa2; color:white; }
+#no{ background:#333; color:white; }
+
+video{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:80%;
+    max-height:80%;
+    border-radius:14px;
+    display:none;
+    z-index:100;
+}
+
+#messageBox{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#140022;
+    color:#ffd6ef;
+    padding:30px;
+    border-radius:20px;
+    font-size:18px;
+    line-height:1.5;
+    max-width:600px;
+    display:none;
+    box-shadow:0 0 30px #ff5fa2;
+    z-index:200;
+    text-align:left;
+}
+
+#messageBox button{
+    display:block;
+    margin:20px auto 0;
+    padding:10px 25px;
+    font-size:16px;
+    border:none;
+    border-radius:12px;
+    background:#ff5fa2;
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="buttons">
+    <button id="yes">YES ❤️</button>
+    <button id="no">NO 💔</button>
+</div>
+
+<video id="yesVideo" src="./myYesVideo.mp4" controls></video>
+<video id="noVideo" src="./myNoVideo.mp4" controls></video>
+
+<div id="messageBox">
+I just want to say something that’s been in my heart.<br><br>
+This is not a proposal. I respect that you need time.<br><br>
+I choose you. Calmly, honestly, without pressure.<br><br>
+I’m happy going slow, at your pace.<br><br>
+<button id="closeMessage">Close</button>
+</div>
+
+<audio id="bgMusic" src="./mySong.mp3" loop></audio>
+
+<script>
+const c = document.getElementById("c");
+const ctx = c.getContext("2d");
+
+c.width = 900;
+c.height = 450;
+
+// ---- MUSIC ----
+const bgMusic = document.getElementById("bgMusic");
+document.addEventListener("click", () => bgMusic.play().catch(()=>{}), { once:true });
+
+// ---- SIMPLE ANIMATION STATE ----
+let manX = 120;
+let girlX = 700;
+let stage = "walk";
+
+function drawStick(x,y,color){
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(x,y-60,18,0,Math.PI*2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x,y-40);
+    ctx.lineTo(x,y+30);
+    ctx.stroke();
+}
+
+function animate(){
+    ctx.clearRect(0,0,c.width,c.height);
+
+    if(stage==="walk"){
+        manX+=1.5;
+        drawStick(manX,300,"white");
+        drawStick(girlX,300,"pink");
+        if(manX>520){
+            stage="ask";
+            document.getElementById("buttons").style.display="flex";
+        }
+    }
+    else if(stage==="ask"){
+        drawStick(manX,300,"white");
+        drawStick(girlX,300,"pink");
+    }
+    else if(stage==="yes"){
+        if(manX<610) manX+=1;
+        if(girlX>610) girlX-=1;
+        drawStick(manX,300,"white");
+        drawStick(girlX,300,"pink");
+    }
+    else if(stage==="no"){
+        drawStick(manX,300,"white");
+        drawStick(girlX,300,"pink");
+    }
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// ---- BUTTONS ----
+const yesVideo = document.getElementById("yesVideo");
+const noVideo = document.getElementById("noVideo");
+
+document.getElementById("yes").onclick = ()=>{
+    stage="yes";
+    document.getElementById("buttons").style.display="none";
+    setTimeout(()=>{
+        document.getElementById("messageBox").style.display="block";
+    },800);
+};
+
+document.getElementById("closeMessage").onclick = ()=>{
+    c.style.display="none";
+    document.getElementById("messageBox").style.display="none";
+    yesVideo.style.display="block";
+    yesVideo.play();
+};
+
+document.getElementById("no").onclick = ()=>{
+    stage="no";
+    document.getElementById("buttons").style.display="none";
+    setTimeout(()=>{
+        c.style.display="none";
+        noVideo.style.display="block";
+        noVideo.play();
+    },1500);
+};
+</script>
+
+</body>
+</html>
